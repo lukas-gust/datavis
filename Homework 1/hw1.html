@@ -75,11 +75,41 @@
     <hr>
     <h2>Line chart</h2>
     <div id="line-chart" class="graph">
-        <svg height="400" width="80%" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <!--using paths-->
+        <svg height="400" width="80%" viewBox="0 -1 100 16" preserveAspectRatio="none">
+            <!--using paths preferred-->
             <g id="left-line">
-                <path d="M3 95 L7 50 L11 40 L15 90 L19 85 L23 85 L27 85 L31 85 L35 85 L39 85 L43 85 L47 85" vector-effect="non-scaling-stroke"/>
-                <line x1="50" x2="50" y1="0" y2="100" stroke="black" stoke-width=1 vector-effect="non-scaling-stroke"/>
+                <path d="M6 4 L10 6 L14 1 L18 5 L22 3 L26 0 L30 8 L34 10 L38 2 L42 7 L46 9" vector-effect="non-scaling-stroke"/>
+            </g>
+            <!--using lines-->
+            <g id="right-line">
+                <line x1="56" x2="60" y1="5.96" y2="7.05" vector-effect="non-scaling-stroke"/>
+                <line x1="60" x2="64" y1="7.05" y2="6.42" vector-effect="non-scaling-stroke"/>
+                <line x1="64" x2="68" y1="6.42" y2="5.19" vector-effect="non-scaling-stroke"/>
+                <line x1="68" x2="72" y1="5.19" y2="5.67" vector-effect="non-scaling-stroke"/>
+                <line x1="72" x2="76" y1="5.67" y2="4.04" vector-effect="non-scaling-stroke"/>
+                <line x1="76" x2="80" y1="4.04" y2="6.76" vector-effect="non-scaling-stroke"/>
+                <line x1="80" x2="84" y1="6.76" y2="9.74" vector-effect="non-scaling-stroke"/>
+                <line x1="84" x2="88" y1="9.74" y2="3.16" vector-effect="non-scaling-stroke"/>
+                <line x1="88" x2="92" y1="3.16" y2="9.18" vector-effect="non-scaling-stroke"/>
+                <line x1="92" x2="96" y1="9.18" y2="8.32" vector-effect="non-scaling-stroke"/>
+            </g>
+            <g class="labels">
+                <line x1="50" x2="50" y1="-1" y2="15" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="0" y2="0" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="1" y2="1" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="2" y2="2" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="3" y2="3" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="4" y2="4" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="5" y2="5" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="6" y2="6" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="7" y2="7" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="8" y2="8" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="9" y2="9" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="10" y2="10" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="11" y2="11" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="12" y2="12" vector-effect="non-scaling-stroke"/>
+                <line x1="49" x2="51" y1="13" y2="13" vector-effect="non-scaling-stroke"/>
+                <line x1="0" x2="100" y1="14" y2="14" vector-effect="non-scaling-stroke"/>
             </g>
         </svg>
 

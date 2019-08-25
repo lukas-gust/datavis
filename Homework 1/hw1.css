@@ -37,8 +37,14 @@ svg {
     fill: grey;
 }
 
-#line-chart path {
+#left-line path {
     stroke: #cc0000;
+    stroke-width: 2;
+    fill: none;
+}
+
+#right-line line {
+    stroke: #006699;
     stroke-width: 2;
     fill: none;
 }
