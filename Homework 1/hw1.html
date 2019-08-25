@@ -10,8 +10,10 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="bar-graph">
+    <h2>Bar graph</h2>
+    <div id="bar-graph" class="graph">
         <svg height="300" width="80%">
+            <!--Percentages seemed like the most intuitive way to encode the data into a pixel location.-->
             <g class="axes">
                 <line x1="4.9%" x2="4.9%" y1="5%" y2="95%"/>
                 <line x1="16.15%" x2="16.15%" y1="5%" y2="95%"/>
@@ -24,7 +26,7 @@
                 <line x1="95.1%" x2="95.1%" y1="5%" y2="95%"/>
             </g>
             <!--X bars-->
-            <g class="left-bars">
+            <g id="left-bars">
                 <rect height="20" width="32.1%" y="15" x="17.8%"/>
                 <rect height="20" width="25.7%" y="40" x="24.2%"/>
                 <rect height="20" width="41.8%" y="65" x="8.1%"/>
@@ -38,7 +40,7 @@
                 <rect height="20" width="16.1%" y="265" x="33.8%"/>
             </g>
             <!--Y bars-->
-            <g class="right-bars">
+            <g id="right-bars">
                 <rect height="20" width="25.8%" y="15" x="50.1%"/>
                 <rect height="20" width="22.3%" y="40" x="50.1%"/>
                 <rect height="20" width="24.4%" y="65" x="50.1%"/>
@@ -61,15 +63,26 @@
                 <line x1="72.6%" x2="72.6%" y1="95%" y2="100%"/>
                 <line x1="83.85%" x2="83.85%" y1="95%" y2="100%"/>
                 <line x1="95.1%" x2="95.1%" y1="95%" y2="100%"/>
+
                 <text x=5.8%, y="99%">14</text>
                 <text x=28.3%, y="99%">7</text>
                 <text x=50.9%, y="99%">0</text>
                 <text x=73.4%, y="99%">7</text>
                 <text x=95.9%, y="99%">14</text>
             </g>
-
-
         </svg>
+    </div>
+    <hr>
+    <h2>Line chart</h2>
+    <div id="line-chart" class="graph">
+        <svg height="400" width="80%" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <!--using paths-->
+            <g id="left-line">
+                <path d="M3 95 L7 50 L11 40 L15 90 L19 85 L23 85 L27 85 L31 85 L35 85 L39 85 L43 85 L47 85" vector-effect="non-scaling-stroke"/>
+                <line x1="50" x2="50" y1="0" y2="100" stroke="black" stoke-width=1 vector-effect="non-scaling-stroke"/>
+            </g>
+        </svg>
+
     </div>
     
 </body>
