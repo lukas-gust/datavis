@@ -49,6 +49,18 @@ svg {
     fill: none;
 }
 
+#left-area path {
+    stroke: none;
+    stroke-width: 2;
+    fill: #cc0000;
+}
+
+#right-area path {
+    stroke: none;
+    stroke-width: 2;
+    fill: #006699;
+}
+
 .labels line {
     stroke: black;
     stroke-width: 1;
