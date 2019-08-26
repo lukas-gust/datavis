@@ -13,6 +13,7 @@ svg {
     background-color: #f2f2f2;
     display: block;
     margin: auto;
+    outline: 1px solid black;
 }
 
 #bar-graph .axes line{
@@ -33,7 +34,9 @@ svg {
     fill: #cc0000;
 }
 
-#left-bars rect:hover, #right-bars rect:hover {
+#left-bars rect:hover, 
+#right-bars rect:hover, 
+#dots circle:hover {
     fill: grey;
 }
 
@@ -49,16 +52,20 @@ svg {
     fill: none;
 }
 
-#left-area path {
+#left-area path,
+#dots circle {
     stroke: none;
-    stroke-width: 2;
     fill: #cc0000;
 }
 
 #right-area path {
     stroke: none;
-    stroke-width: 2;
     fill: #006699;
+}
+
+#reg line {
+    stroke: #006699;
+    stroke-width: 1;
 }
 
 .labels line {
