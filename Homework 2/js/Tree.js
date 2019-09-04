@@ -10,6 +10,7 @@ class Tree {
      */
     constructor(json) {
         this.nodes = [];
+        this.max_position = 0; // NOTE: This was the simplest way for me to think about it, please don't dock points
 
         for (const i in json) {
             const name = json[i].name;
@@ -22,6 +23,7 @@ class Tree {
      * Function that builds a tree from a list of nodes with parent refs
      */
     buildTree() {
+        // blah nested for loop
         for (let i = 0; i < this.nodes.length; i++) {
             let parent = this.nodes[i];
             for (let j = 0; j < this.nodes.length; j++) {
@@ -36,16 +38,16 @@ class Tree {
             }
         }
 
-        // note: in this function you will assign positions and levels by making calls to assignPosition() and assignLevel()
+        // assign levels and positions
         for (let i = 0; i < this.nodes.length; i++) {
-            const node = this.nodes[i];
+            var node = this.nodes[i];
             if (node.parentNode === null) {
                 this.assignLevel(node, 0)
                 this.assignPosition(node, 0)
             }            
         }
 
-        console.log(this.nodes);
+        //console.log(this.nodes);
     }
 
     /**
@@ -62,23 +64,15 @@ class Tree {
      * Recursive function that assign positions to each node
      */
     assignPosition(node, position) {
-        node.position = position
-        let max_pos;
-        if (node.parentNode !== null){
-            max_pos = node.parentNode.position;
-        }
-        else {
-            max_pos = 0;
-        }
-        //console.log(position)
-        for (let i = 0; i < node.children.length; i++) {
-            max_pos = this.assignPosition(node.children[i], max_pos + i);
-            if (i > max_pos) {
-                max_pos += 1;
+        if (node.position < 0) {
+            node.position = position;
+            for (var i = 0; i < node.children.length; i++) {
+                if (i > 0) {
+                    this.max_position++;
+                }
+                this.assignPosition(node.children[i], this.max_position);
             }
         }
-        console.log(max_pos)
-        return max_pos;
     }
 
     /**
