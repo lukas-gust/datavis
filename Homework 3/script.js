@@ -4,7 +4,24 @@
  * Note: use only the DOM API, not D3!
  */
 function staircase() {
-  // ****** TODO: PART II ******
+  let aBarChart = document.getElementById("aBarChart");
+  let bBarChart = document.getElementById("bBarChart");
+
+  let aBars = Array.from(aBarChart.querySelectorAll("rect"));
+  let bBars = Array.from(bBarChart.querySelectorAll("rect"));
+
+  aBars = aBars.sort((a, b) => parseFloat(a.getAttribute("width")) - parseFloat(b.getAttribute("width")));
+  bBars = bBars.sort((a, b) => parseFloat(a.getAttribute("width")) - parseFloat(b.getAttribute("width")));
+
+  for (let i = 0; i < aBars.length; i++) {
+    let el = aBars[i];
+    el.setAttribute('transform', `translate(18, ${i*20}) scale(-15, 1)`);
+
+    console.log(el.parentNode);
+
+
+    aBarChart.insertBefore(el, el.parentNode.firstChild)
+  }
 }
 
 /**
@@ -31,6 +48,7 @@ function update(data) {
 
   console.log(data);
   // Set up the scales
+  // TODO: The scales below are examples, modify the ranges and domains to suit your implementation.
   let aScale = d3
     .scaleLinear()
     .domain([0, d3.max(data, d => d.a)])
@@ -47,8 +65,54 @@ function update(data) {
   // ****** TODO: PART III (you will also edit in PART V) ******
 
   // TODO: Select and update the 'a' bar chart bars
+  let aBarChart = d3.select("#aBarChart");
+
+  let aBarRects = aBarChart.selectAll("rect").data(data);
+
+  aBarRects
+    .exit()
+    .transition()
+    .duration(1000)
+    .attr("transform", (d, i) => `translate(18, ${i*20}) scale(${1/-15}, 1)`)
+    .remove();
+
+  aBarRects = aBarRects.enter()
+    .append("rect")
+    .attr("width", 0)
+    .attr("height", 18)
+    .merge(aBarRects);
+
+  aBarRects
+    .attr("transform", (d, i) => `translate(18, ${i*20}) scale(-15, 1)`)
+    .transition().duration(200)
+    .attr("width", (d, i) => d.a)
+    .attr("height", 18);;
+
 
   // TODO: Select and update the 'b' bar chart bars
+  let bBarChart = d3.select("#bBarChart");
+
+  let bBarRects = bBarChart.selectAll("rect").data(data);
+
+  bBarRects
+    .exit()
+    .transition()
+    .duration(1000)
+    .attr("transform", (d, i) => `translate(0, ${i*20}) scale(${1/15}, 1)`)
+    .remove();
+
+  bBarRects = bBarRects
+    .enter()
+    .append("rect")
+    .attr("width", 0)
+    .attr("height", 18)
+    .merge(bBarRects);
+
+  bBarRects
+    .attr("transform", (d, i) => `translate(0, ${i*20}) scale(15, 1)`)
+    .transition().duration(200)
+    .attr("width", (d, i) => d.b)
+    .attr("height", 18);
 
   // TODO: Select and update the 'a' line chart path using this line generator
 
@@ -99,4 +163,19 @@ async function changeData() {
  */
 function randomSubset(data) {
   return data.filter(d => Math.random() > 0.5);
+}
+
+window.onload = initialize();
+
+function initialize() {
+  let stairBtn = document.getElementById("staircase");
+  stairBtn.onclick = staircase;
+
+  let dataSelect = document.getElementById("dataset");
+  dataSelect.onchange = changeData;
+
+  let rndSubset = document.getElementById("random");
+  rndSubset.onchange = changeData;
+
+  changeData();
 }
