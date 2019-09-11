@@ -58,6 +58,8 @@ function update(data) {
     .domain([0, 11])
     .range([0, 220]);
 
+  
+
   // ****** TODO: PART III (you will also edit in PART V) ******
 
   // TODO: Select and update the 'a' bar chart bars
@@ -73,8 +75,10 @@ function update(data) {
 
   aBarRects
     .exit()
+    .style("opacity", 1)
     .transition()
     .duration(1000)
+    .style("opacity", 0)
     .attr("transform", (d, i) => `translate(18, ${iScale(i)}) scale(0, 1)`)
     .remove();
 
@@ -100,8 +104,10 @@ function update(data) {
 
   bBarRects
     .exit()
+    .style("opacity", 1)
     .transition()
     .duration(1000)
+    .style("opacity", 0)
     .attr("transform", (d, i) => `translate(0, ${iScale(i)}) scale(0, 1)`)
     .remove();
 
@@ -120,7 +126,21 @@ function update(data) {
     .x((d, i) => iScale(i))
     .y(d => aScale(d.a));
 
+  let aLineChart = d3.select("#aLineChart");
+
+  aLineChart
+    .attr("d", aLineGenerator(data));
+
   // TODO: Select and update the 'b' line chart path (create your own generator)
+  let bLineGenerator = d3
+    .line()
+    .x((d, i) => iScale(i))
+    .y(d => bScale(d.b));
+
+  let bLineChart = d3.select("#bLineChart");
+
+  bLineChart
+    .attr("d", bLineGenerator(data));
 
   // TODO: Select and update the 'a' area chart path using this area generator
   let aAreaGenerator = d3
