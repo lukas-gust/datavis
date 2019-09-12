@@ -22,12 +22,13 @@
             transition: width 0.8s ease, fill 0.1s ease;
         }
 
-        .bar-chart :hover {
+        .bar-chart rect:hover {
             fill: #979696;
         }
 
-        .scatter-plot :hover {
+        .scatter-plot circle:hover {
             fill: #979696;
+            cursor: pointer;
         }
 
         /* style of line charts */
@@ -78,6 +79,7 @@
         }
     </style>
     <script src="https://d3js.org/d3.v5.js"></script>
+    <script src="https://unpkg.com/d3-interpolate-path/build/d3-interpolate-path.min.js"></script>
 </head>
 
 <body>
@@ -150,13 +152,12 @@
             <h2>Line Charts</h2>
             <svg class="line-chart line-chart-x" width="300" height="300">
                 <g transform="translate(0, 300) scale(1, -1)">
-                    <path id="aLineChart" d="M 0 10 L 1 8 L 2 13 L 3 9 L 4 11 L 5 14 L 6 6 L 7 4 L 8 12 L 9 7 L 10 5" />
+                    <path id="aLineChart"/>
                 </g>
             </svg>
             <svg class="line-chart line-chart-y" width="300" height="300">
                 <g transform="translate(0, 300), scale(1, -1)">
-                    <path id="bLineChart"
-                        d="M 0 8.04 L 0 8.04 L 1 6.95 L 2 7.58 L 3 8.81 L 4 8.33 L 5 9.96 L 6 7.24 L 7 4.26 L 8 10.84 L 9 4.82 L 10 5.68 L 10 5.68" />
+                    <path id="bLineChart"/>
                 </g>
             </svg>
         </div>
@@ -165,63 +166,28 @@
     <div class="row">
         <div>
             <h2>Area Charts</h2>
-            <svg class="area-chart area-chart-x" width="300" height="300">
-                <g transform="translate(300,0) rotate(90) scale(20, 15)">
-                    <path id="aAreaChart"
-                        d="M 0 0 L 0 10 L 1 8 L 2 13 L 3 9 L 4 11 L 5 14 L 6 6 L 7 4 L 8 12 L 9 7 L 10 5 10 0" />
+            <svg class="area-chart area-chart-x" width="350" height="300">
+                <g transform="translate(350,0) rotate(90)">
+                    <path id="aAreaChart"/>
                 </g>
             </svg>
-            <svg class="area-chart area-chart-y" width="300" height="300">
-                <g transform="translate(0, 0) rotate(90) scale(20, -25)">
-                    <path id="bAreaChart"
-                        d="M 0 0 L 0 8.04 L 1 6.95 L 2 7.58 L 3 8.81 L 4 8.33 L 5 9.96 L 6 7.24 L 7 4.26 L 8 10.84 L 9 4.82 L 10 5.68 L 10 0" />
+            <svg class="area-chart area-chart-y" width="350" height="300">
+                <g transform="translate(0, 0) rotate(90) scale(1, -1)">
+                    <path id="bAreaChart"/>
                 </g>
             </svg>
         </div>
 
         <div>
             <h2>Scatterplot</h2>
-            <svg class="scatter-plot" width="300" height="300">
-                <rect width="300" height="300" />
-                <g transform="translate(50, 50) " id="scatterplot">
-                    <circle cx="10.0" cy="8.04" r="0.4">
-                        <title>10.0, 8.04</title>
-                    </circle>
-                    <circle cx="8.0" cy="6.95" r="0.4">
-                        <title>8.0, 6.95</title>
-                    </circle>
-                    <circle cx="13.0" cy="7.58" r="0.4">
-                        <title>13.0, 7.58</title>
-                    </circle>
-                    <circle cx="9.0" cy="8.81" r="0.4">
-                        <title>9.0, 8.81</title>
-                    </circle>
-                    <circle cx="11.0" cy="8.33" r="0.4">
-                        <title>11.0, 8.33</title>
-                    </circle>
-                    <circle cx="14.0" cy="9.96" r="0.4">
-                        <title>14,0, 9.96</title>
-                    </circle>
-                    <circle cx="6.0" cy="7.22" r="0.4">
-                        <title>6.0, 7.22</title>
-                    </circle>
-                    <circle cx="4.0" cy="4.26" r="0.4">
-                        <title>4.0, 4.26</title>
-                    </circle>
-                    <circle cx="12.0" cy="10.84" r="0.4">
-                        <title>12.0, 10.84</title>
-                    </circle>
-                    <circle cx="7.0" cy="4.82" r="0.4">
-                        <title>7.0, 4.82</title>
-                    </circle>
-                    <circle cx="5.0" cy="5.68" r="0.4">
-                        <title>5.0, 5.68</title>
-                    </circle>
+            <svg class="scatter-plot" width="400" height="400">
+                <rect width="400" height="400" />
+                <g transform="translate(50, 350)" id="scatterplot">
                     <g class="line-chart">
-                        <line id="regression-line" x1="2" y1="4" x2="16" y2="11" />
+                        <path id="regression-line"/>
                     </g>
-                    <g id="x-axis" transform="translate(0, 200)"></g>
-                    <g id="y-axis" transform="translate(0, 0)"></g>
+                    <g id="x-axis" transform="translate(0, 0)"></g>
+                    <g id="y-axis" transform="translate(0, -300)"></g>
                 </g>
             </svg>
         </div>
