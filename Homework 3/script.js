@@ -325,7 +325,7 @@ function update(data) {
 
   points.on("click", d => console.log(`(${d.a}, ${d.b})`));
 
-
+}
 /**
  * Update the data according to document settings
  */
