@@ -3,7 +3,7 @@ loadData().then(data => {
     // no country selected by default
     this.activeCountry = null;
     // deafultActiveYear is 2000
-    this.activeYear = '2010';
+    this.activeYear = '2000';
     let that = this;
 
     // ******* TODO: PART 3 *******
@@ -13,8 +13,11 @@ loadData().then(data => {
      * @param countryID the ID object for the newly selected country
      */
     function updateCountry(countryID) {
-
         that.activeCountry = countryID;
+
+        worldMap.updateHighlightClick(countryID)
+        gapPlot.updateHighlightClick(countryID)
+        infoBox.updateTextDescription(that.activeCountry, that.activeYear)
 
         //TODO - Your code goes here - 
 
@@ -29,6 +32,16 @@ loadData().then(data => {
      *  @param year the new year we need to set to the other views
      */
     function updateYear(year) {
+        that.activeYear = year;
+
+        infoBox.updateTextDescription(that.activeCountry, that.activeYear)
+
+        let dropDownWrapper = d3.select(".dropdown-wrapper")
+        let yValue = dropDownWrapper.select('#dropdown_y').select('.dropdown-content').select('select').node().value;
+        let xValue = dropDownWrapper.select('#dropdown_x').select('.dropdown-content').select('select').node().value;
+        let cValue = dropDownWrapper.select('#dropdown_c').select('.dropdown-content').select('select').node().value;
+
+        gapPlot.updatePlot(that.activeYear, xValue, yValue, cValue);
 
         //TODO - Your code goes here - 
 
@@ -40,6 +53,8 @@ loadData().then(data => {
 
 
     // Initialize the plots; pick reasonable default values
+    gapPlot.drawPlot();
+    gapPlot.updatePlot(activeYear, 'fertility-rate', 'gdp', 'population');
 
     // here we load the map data
     d3.json('data/world.json').then(mapData => {
@@ -49,9 +64,25 @@ loadData().then(data => {
     });
 
     // This clears a selection by listening for a click
+    let ignoreSlider = document.getElementById("year-slider")
+    let ignoreDropdown =  document.querySelectorAll(".dropdown")
+    
     document.addEventListener("click", function(e) {
-        //TODO - Your code goes here - 
-		// call clear highight methods
+        let target = e.target;
+        if (target === ignoreSlider || ignoreSlider.contains(target)){
+            return;
+        }
+
+        for (const ignore of ignoreDropdown) {
+            if (target === ignore || ignore.contains(target)){
+                return;
+            }
+        }
+        worldMap.clearHighlight();
+        gapPlot.clearHighlight();
+        infoBox.clearHighlight();
+
+        that.activeCountry = null
     }, true);
 });
 

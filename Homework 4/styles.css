@@ -49,17 +49,18 @@ path.hidden {
 
 #country-detail .stats span {
     font-weight: bold;
+    padding-left: 5px;
 }
 
 #country-detail div.label {
-    font-size: 26px;
+    font-size: 16px;
     display: block;
     width: 100%;
     padding-top: 10px;
 }
 
 #country-detail div.label span {
-    font-size: 22px;
+    font-size: 14px;
     padding-bottom: 15px;
     font-weight: bold;
 }
@@ -93,6 +94,13 @@ path.hidden {
 
 .countries {
     fill: #d9d9d9;
+}
+
+path.countries.selected-country,
+circle.countries.selected-country {
+    fill: #979797;
+    /*  stroke-width: 1px;*/
+    /* stroke: #000000;*/
 }
 
 .circle-legend {
@@ -335,7 +343,7 @@ div.tooltip {
     min-width: 60px;
     height: 28px;
     padding: 2px;
-    background: white;
+    background: lightgrey;
     stroke: gray;
     border-radius: 8px;
     pointer-events: none;
@@ -344,6 +352,10 @@ div.tooltip {
 .tooltip h2 {
     margin: auto;
     font: 14px sans-serif;
+}
+
+.tooltip g {
+
 }
 
 

@@ -63,11 +63,14 @@ class Map {
         // We have provided a class structure for the data called CountryData that you should assign the paramters to in your mapping
 
         //TODO - Your code goes here - 
+
+        let that = this
+
         let geojson = topojson.feature(world, world.objects.countries);
 
-        let path = d3.geoPath().projection(this.projection)
+        let path = d3.geoPath().projection(this.projection);
 
-        let svg = d3.select("#map-chart").append("svg")        
+        let svg = d3.select("#map-chart").append("svg");      
         
         let countryData = geojson.features.map(country => {
 
@@ -75,12 +78,13 @@ class Map {
             let region = 'countries';
 
             if (index > -1) {
-                //  console.log(this.populationData[index].geo, country.id);
                 region = this.populationData[index].region;
-                return new CountryData(country.type, country.id, country.properties, country.geometry, region);
             }
+            return new CountryData(country.type, country.id, country.properties, country.geometry, region);
+            
 
         });
+
         svg.selectAll("path")
             .data(geojson.features)
             .join("path").attr("d", path)
@@ -88,20 +92,22 @@ class Map {
                 let region = countryData[i] ? countryData[i].region : "";
                 return `boundary countries ${region}`;
             })
-            .attr("id", d => d.id);
+            .attr("id", d => d.id)
+            .on('click', function() {                
+                that.updateCountry(this.id)
+            });
 
-            let graticule = d3.geoGraticule();
+        let graticule = d3.geoGraticule();
 
-            svg.append("path").datum(graticule).attr("class", "graticule").attr('d', path)
-    
-            svg.append("path").datum(graticule.outline).attr("class", "stroke").attr("d", path)
-    
+        svg.append("path")
+            .datum(graticule)
+            .attr("class", "graticule")
+            .attr('d', path);
 
-
-
-        console.log(countryData);
-
-
+        svg.append("path")
+            .datum(graticule.outline)
+            .attr("class", "stroke")
+            .attr("d", path);
 
     }
 
@@ -115,9 +121,11 @@ class Map {
         // Hint: If you followed our suggestion of using classes to style
         // the colors and markers for countries/regions, you can use
         // d3 selection and .classed to set these classes on here.
-        //
+        
+        let svg = d3.select("#map-chart");
 
-        //TODO - Your code goes here - 
+        svg.select(`#${activeCountry}`)
+            .classed("selected-country", true);
 
     }
 
@@ -133,8 +141,9 @@ class Map {
         // the colors and markers for hosts/teams/winners, you can use
         // d3 selection and .classed to set these classes off here.
 
-        //TODO - Your code goes here - 
-
-
+        d3.select("#map-chart")
+            .selectAll(".selected-country")
+            .classed("selected-country", false);
+        
     }
 }

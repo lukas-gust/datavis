@@ -46,30 +46,18 @@ class GapPlot {
         this.margin = { top: 20, right: 20, bottom: 60, left: 80 };
         this.width = 810 - this.margin.left - this.margin.right;
         this.height = 500 - this.margin.top - this.margin.bottom;
+
         this.activeYear = activeYear;
+        this.updateYear = updateYear;
+        this.updateCountry = updateCountry;
+
+        this.countryToRegion = Object()
+        data.population.map(d => this.countryToRegion[d.geo.toUpperCase()] = d.region)        
 
         this.data = data;
         this.nameArray = data.population.map(d => d.geo.toUpperCase());
 
-        console.log(data);
-        
-
-        this.drawPlot();
-
-        this.updatePlot(activeYear, 'fertility-rate', 'gdp', 'population');
-
-        //YOUR CODE HERE  
-
-
-        // ******* TODO: PART 3 *******
-        /**
-         For part 4 of the homework, you will be using the other 3 parameters.
-         * assign the highlightUpdate function as a variable that will be accessible to you in updatePlot()
-         * assign the dragUpdate function as a variable that will be accessible to you in updatePlot()
-         */
-
-        //YOUR CODE HERE  
-
+        this.activeCountry = null;
 
     }
 
@@ -110,17 +98,38 @@ class GapPlot {
 
         let svgGroup = d3.select('#chart-view').select('.plot-svg').append('g').classed('wrapper-group', true);
 
-        // let xScale = d3.scaleLinear().domain([0, 9]).range([this.margin.left, this.width]);
-        // let yScale = d3.scaleLinear().domain([180000, 0]).range([this.margin.bottom, this.height]);
-        // let xAxis = d3.axisBottom().scale(xScale);
-        // let yAxis = d3.axisLeft().scale(yScale);
+        svgGroup.append('g')
+            .attr("id", "x-axis")
+            .attr("class", "axis")
+            .attr("transform", `translate(0, ${this.height})`);
 
-        svgGroup.append('g').attr("id", "x-axis").attr("class", "axis").attr("transform", `translate(0, ${this.height})`)
-        svgGroup.append('g').attr("id", "y-axis").attr("class", "axis").attr("transform", `translate(${this.margin.left}, 0)`)
-        svgGroup.append('g').attr("id", "x-axis-label").attr("class", "axis-label").append('text').attr("text-anchor", "middle").attr("x", this.width/2).attr("y", this.height+this.margin.bottom)
-        svgGroup.append('g').attr("id", "y-axis-label").attr("transform", "rotate(-90)").append('text').attr("class", "axis-label").attr("text-anchor", "middle").attr("y", this.margin.right).attr("x", -(this.height/2))
+        svgGroup.append('g')
+            .attr("id", "y-axis")
+            .attr("class", "axis")
+            .attr("transform", `translate(${this.margin.left}, 0)`);
 
-        svgGroup.append('g').attr("class", "activeYear-background").append('text').attr("x", this.width/4).attr("y", this.height/3)
+        svgGroup.append('g')
+            .attr("id", "x-axis-label")
+            .attr("class", "axis-label")
+            .append('text')
+            .attr("text-anchor", "middle")
+            .attr("x", this.width/2)
+            .attr("y", this.height+this.margin.bottom)
+
+        svgGroup.append('g')
+            .attr("id", "y-axis-label")
+            .attr("transform", "rotate(-90)")
+            .append('text')
+            .attr("class", "axis-label")
+            .attr("text-anchor", "middle")
+            .attr("y", this.margin.right)
+            .attr("x", -(this.height/2))
+
+        svgGroup.append('g')
+            .attr("class", "activeYear-background")
+            .append('text')
+            .attr("x", this.width/4)
+            .attr("y", this.height/3)
 
         /* This is the setup for the dropdown menu- no need to change this */
 
@@ -159,6 +168,8 @@ class GapPlot {
             .append('svg')
             .append('g')
             .attr('transform', 'translate(10, 0)');
+
+        this.drawYearBar();
 
     }
 
@@ -211,6 +222,8 @@ class GapPlot {
          * @param d the data value to encode
          * @returns {number} the radius
          */
+        let that = this;
+
         let circleSizer = function(d, min, max) {
             let cScale = d3.scaleSqrt().range([3, 20]).domain([min, max]);
             return d.circleSize ? cScale(d.circleSize) : 3;
@@ -245,7 +258,25 @@ class GapPlot {
             })
         };
 
-        let activeData = this.data[xIndicator].map((d,i) => {            
+        let indicators = [xIndicator, yIndicator, circleSizeIndicator]
+
+        var max = -1;
+        var index = -1;
+
+        for (const i in indicators) {
+            if (indicators.hasOwnProperty(i)) {
+                const ind = indicators[i];
+                let arrLen = this.data[ind].length;
+                if (max < arrLen){
+                    max = arrLen;
+                    index = i;
+                }
+            }
+        }
+
+        let maxIndicator = indicators[index]
+
+        let activeData = this.data[maxIndicator].map((d,i) => {            
             let idx = this.nameArray.indexOf(d.geo.toUpperCase());
             let country = d.country
             let id = d.geo.toUpperCase()
@@ -253,20 +284,20 @@ class GapPlot {
 
             if (idx > -1){
                 region = this.data.population[idx].region;
+            }
                 
-                let xVal = this.data[xIndicator][idx][activeYear]
-                let yVal = this.data[yIndicator][idx][activeYear]
-                let circleSize = this.data[circleSizeIndicator][idx][activeYear]
-                return new PlotData(country, xVal, yVal, id, region, circleSize)
-            }
-            else{
-                return new PlotData(country, 0, 0, id, region, 0)
-            }
-        }).filter(d => d != null);     
-        
-        console.log(activeData);
-        
+            let xVal = this.data[xIndicator].filter(d => d.geo.toUpperCase() === id)
+            let yVal = this.data[yIndicator].filter(d => d.geo.toUpperCase() === id)
+            let circleSize = this.data[circleSizeIndicator].filter(d => d.geo.toUpperCase() === id)
 
+            xVal = xVal.length ? xVal[0][activeYear] : 0;
+            yVal = yVal.length ? yVal[0][activeYear] : 0;
+            circleSize = circleSize.length ? circleSize[0][activeYear] : 0;
+
+            return new PlotData(country, xVal, yVal, id, region, circleSize)
+
+        });     
+        
         // Draw the dropdowns
         this.drawDropDown(xIndicator, yIndicator, circleSizeIndicator)
 
@@ -276,9 +307,6 @@ class GapPlot {
 
         let ymax = findMax(this.data[yIndicator])
         let ymin = findMin(this.data[yIndicator])
-
-        console.log("MAX", d3.max(activeData, d => d.circleSize))
-        console.log("MAX", d3.min(activeData, d => d.circleSize))
 
         let cmax = d3.max(activeData, d => d.circleSize)
         let cmin = d3.min(activeData, d => d.circleSize)  
@@ -295,10 +323,11 @@ class GapPlot {
         chartView.select("#x-axis").call(xAxis)
         chartView.select("#y-axis").call(yAxis)
 
-        console.log(this.data[xIndicator]);
-
-        chartView.select("#x-axis-label").select("text").text(this.data[xIndicator][0].indicator_name);
-        chartView.select("#y-axis-label").select("text").text(this.data[yIndicator][0].indicator_name);
+        chartView.select("#x-axis-label").select("text")
+            .text(this.data[xIndicator][0].indicator_name);
+        
+        chartView.select("#y-axis-label").select("text")
+            .text(this.data[yIndicator][0].indicator_name);
 
         // Draw the circle legend
         this.drawLegend(cmin, cmax)
@@ -307,14 +336,37 @@ class GapPlot {
         chartView.select(".activeYear-background").select("text").text(activeYear)
 
         // Draw circles
-        chartView.select(".wrapper-group").selectAll("circle").data(activeData.filter(d => d != null)).join("circle")
+        chartView.select(".wrapper-group")
+            .selectAll("circle")
+            .data(activeData.filter(d => d != null))
+            .join("circle")
             .attr("r", d => circleSizer(d, cmin, cmax))
             .attr("cx", d => xScale(d.xVal))
             .attr("cy", d => yScale(d.yVal))
-            .attr("class", d =>  d.region);
+            .attr("class", d =>  d.region)
+            .attr("id", d => d.id)
+            .on("click", function() {
+                that.updateCountry(this.id)
+            })
+            .on("mouseover", function(d) {
+                let tooltip = d3.select("#chart-view").select(".tooltip")
 
+                tooltip
+                    .html(that.tooltipRender(d))
+                    .style("left", `${d3.event.pageX}px`)
+                    .style("top", `${d3.event.pageY - 28}px`)
+                    .transition()
+                    .duration(300)
+                    .style("opacity", 1)
+            })
+            .on("mouseout", function(d) {
+                let tooltip = d3.select("#chart-view").select(".tooltip")
 
-        //YOUR CODE HERE  
+                tooltip
+                    .transition()
+                    .duration(300)
+                    .style("opacity", 0)
+            });
 
     }
 
@@ -363,6 +415,10 @@ class GapPlot {
             let xValue = dropX.node().value;
             let yValue = dropY.node().value;
             that.updatePlot(that.activeYear, xValue, yValue, cValue);
+
+            if (that.activeCountry) {
+                that.updateHighlightClick(that.activeCountry);
+            }
         });
 
         /* X DROPDOWN */
@@ -390,6 +446,10 @@ class GapPlot {
             let yValue = dropY.node().value;
             let cValue = dropC.node().value;
             that.updatePlot(that.activeYear, xValue, yValue, cValue);
+
+            if (that.activeCountry) {
+                that.updateHighlightClick(that.activeCountry);
+            }
         });
 
         /* Y DROPDOWN */
@@ -417,6 +477,10 @@ class GapPlot {
             let xValue = dropX.node().value;
             let cValue = dropC.node().value;
             that.updatePlot(that.activeYear, xValue, yValue, cValue);
+
+            if (that.activeCountry) {
+                that.updateHighlightClick(that.activeCountry);
+            }
         });
 
     }
@@ -444,6 +508,7 @@ class GapPlot {
         let yearSlider = d3.select('#activeYear-bar')
             .append('div').classed('slider-wrap', true)
             .append('input').classed('slider', true)
+            .attr('id', "year-slider")
             .attr('type', 'range')
             .attr('min', 1800)
             .attr('max', 2020)
@@ -459,7 +524,15 @@ class GapPlot {
         sliderText.attr('y', 25);
 
         yearSlider.on('input', function() {
-            //YOUR CODE HERE  
+            that.activeYear = this.value
+
+            sliderText.attr('x', yearScale(that.activeYear));
+            sliderLabel.select("text").text(that.activeYear)
+
+            that.updateYear(that.activeYear)
+            if (that.activeCountry) {
+                that.updateHighlightClick(that.activeCountry);
+            }
         });
     }
 
@@ -512,7 +585,22 @@ class GapPlot {
         // You will not be calling this directly in the gapPlot class,
         // you will need to call it from the updateHighlight function in script.js
         */
-        //YOUR CODE HERE  
+        let activeRegion = this.countryToRegion[activeCountry];
+        this.activeCountry = activeCountry;
+         
+       
+        let chartGroup = d3.select("#chart-view").select(".wrapper-group");
+
+        chartGroup.selectAll('circle')
+            .filter(function() {
+                return !this.classList.contains(activeRegion);
+            })
+            .classed("hidden", true);
+
+        chartGroup.select(`#${activeCountry}`).classed("selected-country", true);
+
+        chartGroup.select(`.${this.countryToRegion[activeCountry]}`).classed("selected-region", true)
+
     }
 
     /**
@@ -526,8 +614,12 @@ class GapPlot {
         // Hint: If you followed our suggestion of using classes to style
         // the colors and markers for hosts/teams/winners, you can use
         // d3 selection and .classed to set these classes off here.
+        this.activeCountry = null
+        let chartGroup = d3.select("#chart-view").select(".wrapper-group");
 
-        //YOUR CODE HERE  
+        chartGroup.selectAll(".selected-country").classed("selected-country", false);
+        chartGroup.selectAll(".selected-region").classed("selected-region", false);
+        chartGroup.selectAll('circle').classed("hidden", false);
     }
 
     /**
@@ -536,7 +628,7 @@ class GapPlot {
      * @returns {string}
      */
     tooltipRender(data) {
-        let text = "<h2>" + data['country'] + "</h2>";
+        let text = "<h2>" + data.country + "</h2>";
         return text;
     }
 
