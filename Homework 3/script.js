@@ -47,17 +47,17 @@ function update(data) {
   // TODO: The scales below are examples, modify the ranges and domains to suit your implementation.
   let aScale = d3
     .scaleLinear()
-    .domain([0, d3.max(data, d => d.a)])
+    .domain([0, d3.max(data, d => d.a)+1])
     .range([0, 300]);
 
   let bScale = d3
     .scaleLinear()
-    .domain([0, d3.max(data, d => d.b)])
+    .domain([0, d3.max(data, d => d.b)+1])
     .range([0, 300]);
 
   let bScaleReverse = d3
     .scaleLinear()
-    .domain([0, d3.max(data, d => d.b)])
+    .domain([0, d3.max(data, d => d.b)+1])
     .range([300, 0]);
 
   let iScale = d3
