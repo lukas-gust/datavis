@@ -1,13 +1,13 @@
 
 table {
-    font: 12px sans-serif;
+    font: 14px sans-serif;
+    border-collapse: collapse;
 }
 
 table #goalAxis {
-    font: 10px sans-serif;
+    font: 5px sans-serif;
 }
 table #goalAxis path{
-    fill: none;
     stroke: #000;
     stroke-width: 1;
     shape-rendering: crispEdges;
@@ -60,7 +60,6 @@ tbody tr .game {
 .label{
     fill: #ffffff;
     font: 14px sans-serif;
-
 }
 
 @font-face {
@@ -117,13 +116,20 @@ header {
     r: 5px;
 }
 
-
-.node circle {
-    fill: #be2714;;
+.goalMade {
+    stroke: #364e74;
 }
 
-.node text {
-    font: 14px sans-serif;
+.goalConceded {
+    stroke: #be2714;
+}
+
+.goalTied {
+    stroke: lightgrey;
+}
+
+.node circle {
+    fill: #be2714;
 }
 
 .winner circle {
@@ -148,7 +154,7 @@ header {
 
 .selectedLabel {
     fill: #e20e0e;
-    font-weight: 300;
+    font-weight: bold;
 }
 
 .view {

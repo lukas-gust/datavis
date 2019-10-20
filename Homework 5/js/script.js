@@ -11,8 +11,9 @@ d3.json('data/fifa-matches-2018.json').then( data => {
 
         //Create a unique "id" field for each game
         csvData.forEach( (d, i) => {
-            d.id = d.Team + d.Opponent + i;
+            d.id = d.Team + d.Opponent + i;            
         });
+        
 
         //Create Tree Object
         let tree = new Tree();
@@ -20,7 +21,7 @@ d3.json('data/fifa-matches-2018.json').then( data => {
 
         //Create Table Object and pass in reference to tree object (for hover linking)
 
-        let table = new Table(data,tree);
+        let table = new Table(data, tree);
 
         table.createTable();
         table.updateTable();
