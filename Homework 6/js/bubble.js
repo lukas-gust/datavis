@@ -14,22 +14,27 @@ class Bubble {
             "height": 130,
             "horizontal_margin": 10,
             "vertical_margin": 12,
-            "expanded_height": this.categories.length * 200
+            "expanded_height": this.categories.length * 130 
         };
-
-        console.log(this.categories);
 
         this.ordinalScale = d3.scaleOrdinal()
             .domain(this.categories)
             .range(d3.schemeSet3)
-        
-        
+
+        this.xScale = d3.scaleLinear()
+            .domain([Math.round(d3.min(this.words, d => d.position)/10)*10, d3.max(this.words, d => d.position)])
+            .range([20, 875]); 
+
+        this.yScale = d3.scaleLinear()
+            .domain([d3.min(this.words, d => d.sourceY), d3.max(this.words, d => d.sourceY)])
+            .range([this.chart.vertical_margin, this.chart.height-this.chart.vertical_margin]);       
     }
 
     /**
      * Initialize the plot with all the div, buttons, etc.
      */
     initPlot() {
+        let that = this;
 
         d3.select('#bubble-wrap')
             .append('div')
@@ -58,6 +63,17 @@ class Bubble {
         toggleBtn
             .append('input')
             .attr('type', 'checkbox')
+            .attr('id', 'toggle')
+            .on('click', function(){
+                let checked = d3.select(this).property('checked')
+
+                if (checked){
+                    that.groupPlot();
+                }
+                else{
+                    that.resetPlot();
+                }
+            });
 
         toggleBtn
             .append('span')
@@ -88,7 +104,7 @@ class Bubble {
             .append('svg')
             .attr('id', 'bubble-axis-svg')
             .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", `0 0 ${this.chart.width} 30`)
+            .attr("viewBox", `0 0 ${this.chart.width} 25`)
 
 
         let svg = plot
@@ -97,7 +113,7 @@ class Bubble {
             .append('svg')
             .attr('id', 'bubble-svg')
             .attr("preserveAspectRatio", "xMinYMin meet")
-            .attr("viewBox", `0 0 ${this.chart.width} ${this.chart.height}`)
+            .attr("viewBox", `0 0 ${this.chart.width} ${this.chart.height}`)    
             .classed("svg-content-responsive", true)
 
         svg.append('g')
@@ -105,6 +121,13 @@ class Bubble {
 
         svg.append('g')
             .attr('id', 'points')
+
+        svg.selectAll('text')
+            .data(this.categories)
+            .join('text')
+                .html(d => d)
+                .classed('category-labels', true)
+                .style('opacity', 0)
 
         this.drawPlot();
         
@@ -115,16 +138,9 @@ class Bubble {
      */
     drawPlot() {
         let that = this;
-        let svg = d3.select('#bubble-svg')
 
-        // Scale and axis
-        let xScale = d3.scaleLinear()
-            .domain([Math.round(d3.min(this.words, d => d.position)/10)*10, d3.max(this.words, d => d.position)])
-            .range([20, 875]);        
-      
-        let yScale = d3.scaleLinear()
-            .domain([d3.min(this.words, d => d.sourceY), d3.max(this.words, d => d.sourceY)])
-            .range([this.chart.vertical_margin, this.chart.height-this.chart.vertical_margin]);
+        // Revert to normal if groups are toggled
+        let svg = d3.select('#bubble-svg')      
 
         let cScale = d3.scaleLinear()
             .domain([
@@ -133,7 +149,7 @@ class Bubble {
             ])
             .range([3, 12]);
 
-        let xAxis = d3.axisBottom(xScale)
+        let xAxis = d3.axisBottom(this.xScale)
             .tickFormat(d => Math.abs(+d))
 
         let xAxisSvg = d3.select('#bubble-axis-svg')
@@ -143,44 +159,86 @@ class Bubble {
         xAxisSvg.call(xAxis)
             .select(".domain").remove()
         
-
-        // Points
-
+        // Guide Lines
         svg.select('#points')
             .selectAll('path')
             .data([0])
             .join('path')
-                .attr('d', `M${xScale(0)} 0 V${xScale(0)} ${this.chart.height}`)
+                .attr('d', `M${this.xScale(0)} 0 V${this.xScale(0)} ${this.chart.height}`)
                 .attr('id', 'guide')
 
+        // Points
         svg.select('#points')
             .selectAll('circle')
             .data(this.words)
             .join('circle')
                 .attr('cx', d => +d.sourceX)
-                .attr('cy', d => yScale(d.sourceY))
+                .attr('cy', d => that.yScale(d.sourceY))
                 .attr('r', d => cScale(d.total))
                 .attr('class', d => d.category)
-                .style('fill', d => d3.rgb(that.ordinalScale(d.category)));
-
-        // Guide lines
-
-        svg.select('#points')
-            .select('path')
-            .data([0])
-            .join('path')
-                .attr(`M${this.chart.width/2} 0 H${this.chart.width/2} ${this.chart.height}`)
-          
-        
-          
-
+                .style('fill', d => d3.rgb(that.ordinalScale(d.category)))
+                .on('click', d => console.log(d))
+                
+    
         // Hover Tooltip
     }
 
     /**
      * Draw grouped plots, i.e. transition existing data.
      */
-    groupPlot() {
+    groupPlot() { //TODO transitions
+        let that = this;
 
+        let svg = d3.select('#bubble-svg')
+
+        svg.transition()
+            .duration(1000)
+            .attr("viewBox", `0 0 ${this.chart.width} ${this.chart.expanded_height}`)
+
+        // Guide Lines
+        svg.select('#points')
+            .select('path')
+            .attr('d', `M${this.xScale(0)} 0 V${this.xScale(0)} ${this.chart.expanded_height}`)
+
+        let circles = svg.select('#points')
+            .selectAll('circle')
+                .transition()
+                .duration(1000)
+                .attr('cx', d => +d.moveX)
+                .attr('cy', d => that.yScale(d.moveY))
+
+        let categories = svg.selectAll('text')
+            .data(this.categories)
+            .join('text')
+                .transition()
+                .duration(1000)
+                .attr('x', 0)
+                .attr('y', (d, i) => i * that.chart.height + 12)
+                .style('opacity', 1)
+
+    }
+
+    /**
+     * Reset the plot via transition. This is to avoid transitions on page loading.
+     */
+    resetPlot() {
+        let that = this
+        let svg = d3.select('#bubble-svg')
+
+        svg.transition()
+            .duration(1000)
+            .attr("viewBox", `0 0 ${this.chart.width} ${this.chart.height}`)
+            .selectAll('.category-labels')
+                .attr('x', 0)
+                .attr('y', 12)
+                .style('opacity', 0)
+
+        
+        let circles = svg.select('#points')
+            .selectAll('circle')
+                .transition()
+                .duration(1000)
+                .attr('cx', d => +d.sourceX)
+                .attr('cy', d => that.yScale(d.sourceY))
     }
 }
