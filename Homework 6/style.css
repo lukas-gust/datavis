@@ -29,8 +29,34 @@ header {
 
 #labels {
     font-weight: bold;
-    padding: 0.2em;
+    padding: 0.2em 0em 0.2em 0em;
 }
+
+#bubble-svg circle{
+    fill: grey;
+    stroke: black;
+}
+
+#bubble-svg path{
+    stroke: grey;
+}
+
+.svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+}
+
+.svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+}
+
 
 /* Toggle slider CSS derived from W3 schools */
 /* The switch - the box around the slider */
