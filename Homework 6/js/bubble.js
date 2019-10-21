@@ -177,10 +177,21 @@ class Bubble {
                 .attr('r', d => cScale(d.total))
                 .attr('class', d => d.category)
                 .style('fill', d => d3.rgb(that.ordinalScale(d.category)))
-                .on('click', d => console.log(d))
+                .on('mouseover', function(){ that.highlightCircle(this) })
+                .on('mouseout', function(){ that.unhiglightCircle(this)})
                 
     
         // Hover Tooltip
+    }
+
+    highlightCircle(that) {
+        d3.select(that)
+            .style('stroke-width', 2);
+    }
+
+    unhiglightCircle(that){
+        d3.select(that)
+        .style('stroke-width', 1);
     }
 
     /**

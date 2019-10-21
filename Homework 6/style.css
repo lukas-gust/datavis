@@ -2,9 +2,10 @@ h1 {
     text-align: center;
 }
 
-header {
-    padding: 0.5em;
-    height: 130px;
+#header-wrap {
+  width: 100%;
+  overflow: auto;
+  display: block;
 }
 
 #title {
@@ -16,11 +17,13 @@ header {
 #info {
     align-content: center;
     float: right;
-    width: 50%
+    width: 50%;
 }
 
 #button-wrap {
     padding: 1em;
+    display: block;
+    width: 100%;
 }
 
 #bubble-wrap {
@@ -61,6 +64,7 @@ header {
 .category-labels {
   font-variant: small-caps;
   font-size: 75%;
+  font-weight: bold;
   fill: grey
 }
 
