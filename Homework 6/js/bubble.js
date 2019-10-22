@@ -38,17 +38,25 @@ class Bubble {
 
         d3.select('#bubble-wrap')
             .append('div')
-            .attr('id', 'button-wrap');
+                .attr('id', 'bubble-plot')
 
-        d3.select('#bubble-wrap')
+        let tooltip = d3.select('#bubble-wrap')
             .append('div')
-            .style('width', '60%')
-            .attr('id', 'bubble-plot')
+                .attr('class', 'tooltip')
+                .style('opacity', 0)
+        
+        tooltip
+            .append('h2')
+                .classed('display-6', true)
+                .attr('id', 'phrase-tool');
 
-        d3.select('#bubble-wrap')
-            .append('div')
-            .attr('class', 'tooltip')
-            .style('opacity', 0);
+        tooltip
+            .append('h4')
+            .attr('id', 'percent-lean-tool')
+
+        tooltip
+            .append('h4')
+            .attr('id', 'percent-tool')
 
         let buttonWrap = d3.select('#button-wrap')
 
@@ -177,21 +185,62 @@ class Bubble {
                 .attr('r', d => cScale(d.total))
                 .attr('class', d => d.category)
                 .style('fill', d => d3.rgb(that.ordinalScale(d.category)))
-                .on('mouseover', function(){ that.highlightCircle(this) })
+                .on('mouseover', function(d){ that.highlightCircle(this, d) })
                 .on('mouseout', function(){ that.unhiglightCircle(this)})
                 
     
         // Hover Tooltip
     }
 
-    highlightCircle(that) {
-        d3.select(that)
+    highlightCircle(that, datum) {
+        let circle = d3.select(that)
             .style('stroke-width', 2);
+
+
+        let cRect = circle.node().getBoundingClientRect();
+        
+        let tooltip = d3.select('.tooltip')
+
+        tooltip
+            .style('left', `${cRect.right}px`)
+            .style('top', `${cRect.top - 115}px`)
+            .transition()
+            .duration(500)
+            .style('opacity', 1)
+        
+        tooltip
+            .select('#phrase-tool')
+            .html(datum.phrase)
+
+        let rep_dem
+        let position = datum.position.toFixed(2)
+        if (position == 0)
+            rep_dem = 'N'
+        else if (position > 0)
+            rep_dem = 'R+'
+        else
+            rep_dem = 'D+'
+
+        tooltip
+            .select('#percent-lean-tool')
+            .html(`${rep_dem} ${Math.abs(position)}`)
+
+        tooltip
+            .select('#percent-tool')
+            .html(`In ${Math.round((datum.total / 50)*100)}% of speeches`)
+            
+        
+
+        
     }
 
     unhiglightCircle(that){
         d3.select(that)
-        .style('stroke-width', 1);
+            .style('stroke-width', 1);
+
+        d3.select('.tooltip')
+            .interrupt()
+            .style('opacity', 0)
     }
 
     /**
