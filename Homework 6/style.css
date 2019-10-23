@@ -48,6 +48,12 @@ h1 {
 #bubble-svg circle{
     fill: grey;
     stroke: black;
+    pointer-events: auto;
+}
+
+marked {
+	fill: grey;
+	stroke: grey;
 }
 
 #bubble-svg path{

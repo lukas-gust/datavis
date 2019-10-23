@@ -214,7 +214,7 @@ class Table {
         
         console.log(element.id);
         
-        teamSort = this.tableElements.sort((a,b) => nameFunc(a.phrase, b.phrase))
+        teamSort = [...this.tableElements].sort((a,b) => nameFunc(a.phrase, b.phrase))
         if (element.id === 'Frequency')
             teamSort = teamSort.sort((a,b) => sortFunc(a.total / 50, b.total / 50));
         else if (element.id === 'Percentages'){

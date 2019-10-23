@@ -8,6 +8,7 @@ class Bubble {
         this.words = words;
 
         this.categories = [...new Set(this.words.map(d => d.category))]
+        this.class_categories = [...new Set(this.words.map(d => d.category.replace('/', ' ')))]
 
         this.chart = {
             "width": 900,
@@ -129,6 +130,7 @@ class Bubble {
 
         svg.append('g')
             .attr('id', 'points')
+            .classed('brush-g', true)
 
         svg.selectAll('text')
             .data(this.categories)
@@ -166,30 +168,90 @@ class Bubble {
 
         xAxisSvg.call(xAxis)
             .select(".domain").remove()
-        
-        // Guide Lines
+
+                // Guide Lines
         svg.select('#points')
+            .classed('brush', true)
             .selectAll('path')
             .data([0])
             .join('path')
                 .attr('d', `M${this.xScale(0)} 0 V${this.xScale(0)} ${this.chart.height}`)
-                .attr('id', 'guide')
+                .attr('id', 'guide')    
+
+        const xBrush = d3.brushX()
+            .extent([[0, 0], [this.chart.width, this.chart.height]])
+            .on('start', function() {
+                //svg.select('#points').selectAll('circle').style('fill', 'lightgrey')
+            })
+            .on('brush', function() {
+                const selection = d3.brushSelection(this);                
+                const selectedIndices = [];
+                if (selection) {
+                    const [left,right] = selection;
+                    
+                    that.words.forEach((d, i) => {
+                        if (+d.sourceX >= left && +d.sourceX <= right)                
+                            selectedIndices.push(i);
+                    });                   
+                }
+
+                if(selectedIndices.length !== 0)
+                    svg.select('#points').selectAll('circle').style('fill', d => d3.rgb(that.ordinalScale(d.category)))
+                else
+                    svg.select('#points').selectAll('circle').style('fill', 'lightgrey')
+
+                if (selectedIndices.length > 0) {
+                    svg.select('#points').selectAll('circle')
+                        .filter((d, i) => {  
+                            return !selectedIndices.includes(d.index);                            
+                        })
+                        .style('fill', 'lightgrey');
+                }
+
+            })
+            .on('end', function() {
+                const selection = d3.brushSelection(this);                
+                const selectedIndices = [];
+                if (selection) {
+                    const [left,right] = selection;
+                    
+                    that.words.forEach((d, i) => {
+                        if (+d.sourceX >= left && +d.sourceX <= right)                
+                            selectedIndices.push(i);
+                    });                   
+                }
+                else
+                    svg.select('#points').selectAll('circle').style('fill', d => d3.rgb(that.ordinalScale(d.category)));
+
+                if (selectedIndices.length > 0) {
+                    svg.select('#points').selectAll('circle')
+                        .filter((d, i) => {  
+                            return !selectedIndices.includes(d.index);                            
+                        })
+                        .style('fill', 'lightgrey');
+                }
+            });
+
+        svg.select('#points').call(xBrush)
+
+        let circle_gs = svg.select('#points')
+            .selectAll('g')
+            .data(this.categories)
+            .join('g')
+                .classed('brush', false)
 
         // Points
-        svg.select('#points')
+        circle_gs
             .selectAll('circle')
-            .data(this.words)
+            .data(cat => that.words.filter(item => item.category === cat))
             .join('circle')
                 .attr('cx', d => +d.sourceX)
                 .attr('cy', d => that.yScale(d.sourceY))
                 .attr('r', d => cScale(d.total))
-                .attr('class', d => d.category)
                 .style('fill', d => d3.rgb(that.ordinalScale(d.category)))
                 .on('mouseover', function(d){ that.highlightCircle(this, d) })
                 .on('mouseout', function(){ that.unhiglightCircle(this)})
                 
-    
-        // Hover Tooltip
     }
 
     highlightCircle(that, datum) {
@@ -229,9 +291,6 @@ class Bubble {
             .select('#percent-tool')
             .html(`In ${Math.round((datum.total / 50)*100)}% of speeches`)
             
-        
-
-        
     }
 
     unhiglightCircle(that){
@@ -260,6 +319,61 @@ class Bubble {
             .select('path')
             .attr('d', `M${this.xScale(0)} 0 V${this.xScale(0)} ${this.chart.expanded_height}`)
 
+        
+            
+        let brushGroups = svg.select('#points').selectAll('g').classed('brush', true)
+
+        brushGroups.nodes().forEach(function(n, i) {
+            console.log(i);
+            
+            d3.select(n).call(d3.brushX().extent([[0, that.chart.height * i], [that.chart.width, (that.chart.height*i) + that.chart.height]])
+            .on('brush', function() {
+                const selection = d3.brushSelection(this);                
+                const selectedIndices = [];
+                if (selection) {
+                    const [left,right] = selection;
+                    
+                    that.words.forEach((d, i) => {
+                        if (+d.sourceX >= left && +d.sourceX <= right)                
+                            selectedIndices.push(i);
+                    });                   
+                }
+
+                svg.select('#points').selectAll('circle').style('fill', d => d3.rgb(that.ordinalScale(d.category)))
+
+                if (selectedIndices.length > 0) {
+                    svg.select('#points').selectAll('circle')
+                        .filter((d, i) => {  
+                            return !selectedIndices.includes(d.index);                            
+                        })
+                        .style('fill', 'lightgrey');
+                }
+
+            })
+            .on('end', function() {
+                const selection = d3.brushSelection(this);                
+                const selectedIndices = [];
+                if (selection) {
+                    const [left,right] = selection;
+                    
+                    that.words.forEach((d, i) => {
+                        if (+d.sourceX >= left && +d.sourceX <= right)                
+                            selectedIndices.push(i);
+                    });                   
+                }
+
+                svg.select('#points').selectAll('circle').style('fill', d => d3.rgb(that.ordinalScale(d.category)))
+
+                if (selectedIndices.length > 0) {
+                    svg.select('#points').selectAll('circle')
+                        .filter((d, i) => {  
+                            return !selectedIndices.includes(d.index);                            
+                        })
+                        .style('fill', 'lightgrey');
+                }
+            }))
+        })
+
         let circles = svg.select('#points')
             .selectAll('circle')
                 .transition()
@@ -275,6 +389,7 @@ class Bubble {
                 .attr('x', 0)
                 .attr('y', (d, i) => i * that.chart.height + 12)
                 .style('opacity', 1)
+
 
     }
 
