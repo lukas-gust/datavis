@@ -212,8 +212,6 @@ class Table {
 
         let teamSort;
         
-        console.log(element.id);
-        
         teamSort = [...this.tableElements].sort((a,b) => nameFunc(a.phrase, b.phrase))
         if (element.id === 'Frequency')
             teamSort = teamSort.sort((a,b) => sortFunc(a.total / 50, b.total / 50));
@@ -227,6 +225,11 @@ class Table {
             teamSort = teamSort.sort((a,b) => sortFunc(+a.total, +b.total));
 
         this.tableElements = teamSort;
+        this.drawTable();
+    }
+
+    updateTable(indices) {
+        this.tableElements = [...this.words].filter(function(d) { return indices.includes(d.index) })
         this.drawTable();
     }
 }
